@@ -1,2 +1,0 @@
-body{font-family:Arial,sans-serif}.container{max-width:800px;margin:0 auto;padding:20px}.search-form{margin-bottom:20px;display:flex}input[type=text]{border:1px solid #ccc;border-radius:4px;flex:1;padding:8px;font-size:16px}button{color:#fff;cursor:pointer;background-color:#007bff;border:none;border-radius:4px;padding:8px 16px;font-size:16px}.image-gallery{grid-gap:20px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));display:grid}img{width:100%;height:auto;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,.1)}
-/*# sourceMappingURL=index.fe294cff.css.map */
