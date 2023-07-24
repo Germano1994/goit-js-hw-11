@@ -1,43 +1,40 @@
-
 import axios from 'axios';
-import Notiflix from 'notiflix'; 
-
+import Notiflix from 'notiflix';
 
 function createPhotoCard(imageData) {
-  const photoCard = document.createElement('div');
-  photoCard.classList.add('photo-card');
-
   const imgElement = document.createElement('img');
   imgElement.src = imageData.webformatURL;
   imgElement.alt = imageData.tags;
   imgElement.loading = 'lazy';
 
-  const infoElement = document.createElement('div');
-  infoElement.classList.add('info');
+  const infoDiv = document.createElement('div');
+  infoDiv.classList.add('info');
 
-  const likesElement = document.createElement('p');
-  likesElement.classList.add('info-item');
-  likesElement.innerHTML = `<b>Likes:</b> ${imageData.likes}`;
+  const likesP = document.createElement('p');
+  likesP.classList.add('info-item');
+  likesP.innerHTML = `<b>Likes:</b> ${imageData.likes}`;
 
-  const viewsElement = document.createElement('p');
-  viewsElement.classList.add('info-item');
-  viewsElement.innerHTML = `<b>Views:</b> ${imageData.views}`;
+  const viewsP = document.createElement('p');
+  viewsP.classList.add('info-item');
+  viewsP.innerHTML = `<b>Views:</b> ${imageData.views}`;
 
-  const commentsElement = document.createElement('p');
-  commentsElement.classList.add('info-item');
-  commentsElement.innerHTML = `<b>Comments:</b> ${imageData.comments}`;
+  const commentsP = document.createElement('p');
+  commentsP.classList.add('info-item');
+  commentsP.innerHTML = `<b>Comments:</b> ${imageData.comments}`;
 
-  const downloadsElement = document.createElement('p');
-  downloadsElement.classList.add('info-item');
-  downloadsElement.innerHTML = `<b>Downloads:</b> ${imageData.downloads}`;
+  const downloadsP = document.createElement('p');
+  downloadsP.classList.add('info-item');
+  downloadsP.innerHTML = `<b>Downloads:</b> ${imageData.downloads}`;
 
-  infoElement.appendChild(likesElement);
-  infoElement.appendChild(viewsElement);
-  infoElement.appendChild(commentsElement);
-  infoElement.appendChild(downloadsElement);
+  infoDiv.appendChild(likesP);
+  infoDiv.appendChild(viewsP);
+  infoDiv.appendChild(commentsP);
+  infoDiv.appendChild(downloadsP);
 
+  const photoCard = document.createElement('div');
+  photoCard.classList.add('photo-card');
   photoCard.appendChild(imgElement);
-  photoCard.appendChild(infoElement);
+  photoCard.appendChild(infoDiv);
 
   return photoCard;
 }
@@ -51,15 +48,32 @@ const perPage = 40;
 let totalHits = 0;
 const API_KEY = '35924143-9020fc77f3274be39114409f4';
 
+function hideLoadMoreButton() {
+  loadMoreBtn.style.display = 'none';
+}
+
+function showLoadMoreButton() {
+  loadMoreBtn.style.display = 'block';
+}
+
+function showEndOfResultsMessage() {
+  hideLoadMoreButton();
+  Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+}
+
+hideLoadMoreButton();
+
 searchForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   const searchQuery = event.target.searchQuery.value.trim();
 
   if (searchQuery === '') {
+    Notiflix.Notify.failure('Please enter a search query.');
     return;
   }
 
+  currentPage = 1; 
   try {
     const response = await axios.get(`https://pixabay.com/api/?key=${API_KEY}&q=${searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${currentPage}&per_page=${perPage}`);
     const images = response.data.hits;
@@ -68,22 +82,19 @@ searchForm.addEventListener('submit', async (event) => {
     if (images.length === 0) {
       Notiflix.Notify.info('Sorry, there are no images matching your search query. Please try again.');
       imageGallery.innerHTML = '';
+      hideLoadMoreButton();
     } else {
-      if (currentPage === 1) {
-        imageGallery.innerHTML = '';
-      }
+      imageGallery.innerHTML = '';
 
       images.forEach((image) => {
-        const photoCard = createPhotoCard(image); 
+        const photoCard = createPhotoCard(image);
         imageGallery.appendChild(photoCard);
       });
 
-      
       if (images.length < totalHits) {
-        loadMoreBtn.style.display = 'block';
+        showLoadMoreButton();
       } else {
-        loadMoreBtn.style.display = 'none';
-        Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+        showEndOfResultsMessage();
       }
     }
   } catch (error) {
@@ -105,16 +116,14 @@ loadMoreBtn.addEventListener('click', async () => {
     const images = response.data.hits;
 
     images.forEach((image) => {
-      const photoCard = createPhotoCard(image); 
+      const photoCard = createPhotoCard(image);
       imageGallery.appendChild(photoCard);
     });
 
-    
     if (images.length < totalHits) {
-      loadMoreBtn.style.display = 'block';
+      showLoadMoreButton();
     } else {
-      loadMoreBtn.style.display = 'none';
-      Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+      showEndOfResultsMessage();
     }
   } catch (error) {
     console.error('Error fetching images:', error);
