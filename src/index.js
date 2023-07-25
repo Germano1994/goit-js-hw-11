@@ -65,6 +65,8 @@ async function fetchImages(searchQuery, page) {
     const images = response.data.hits;
     totalHits = response.data.totalHits;
 
+   
+
     if (images.length === 0 && page === 1) {
       Notiflix.Notify.info('Sorry, there are no images matching your search query. Please try again.');
       imageGallery.innerHTML = '';
@@ -78,12 +80,17 @@ async function fetchImages(searchQuery, page) {
         imageGallery.appendChild(photoCard);
       });
 
-      if (images.length < totalHits) {
-        loadMoreBtn.style.display = 'block';
-      } else {
-        showEndOfResultsMessage();
-      }
+    
     }
+
+    if  (response.data.hits.length < 40) {
+      hideLoadMoreButton();
+      showEndOfResultsMessage();
+    } else {
+      loadMoreBtn.style.display = 'block';
+      
+    }
+
   } catch (error) {
     console.error('Error fetching images:', error);
   }
